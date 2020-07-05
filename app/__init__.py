@@ -15,7 +15,8 @@ app = create_app()
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-logger = logging.getLogger('ingest_logger')
-app.logger.handlers.extend(logger.handlers)
+ingest_logger = logging.getLogger('ingest_logger')
+app.logger.handlers.extend(ingest_logger.handlers)
+logging.getLogger().setLevel(logging.INFO)
 
 from app.routes import routes

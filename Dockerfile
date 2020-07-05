@@ -20,4 +20,4 @@ RUN pip3 install --no-cache-dir -r /app/requirements.txt
 WORKDIR /app
 
 # run sockets with uwsgi. Here you can use an entrypoint.sh script.
-ENTRYPOINT ["uwsgi", "--http", "0.0.0.0:8000", "--module", "app:app", "--processes", "1", "--threads", "8"]
+CMD ["uwsgi", "--http", "0.0.0.0:8000", "--module", "app:app", "--processes", "1", "--threads", "8"]
