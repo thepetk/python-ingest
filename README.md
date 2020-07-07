@@ -22,19 +22,19 @@ cd your_folders_name
 * Create venv on project folder and install requirements:
 ```
 $ python3 -m venv venv
+$ source venv/bin/activate
 $ pip3 install -r requirements.txt
 ```
-* Run necessary db migrations;
+* Run necessary db migrations. Do not forget to change the sqlalchemy.url on alembic.ini file
 ```
-$ flask db init
-$ flask db migrate
-$ flask db upgrade
+$ alembic head upgrade
 ```
 * Go to .env file inside config folder and change environment variable values according to your credentials.
 
 * Now you can build your docker image.
 ```
 docker build -t python-ingest:v1 .
+# or just use make image command
 ```
 
 ## Usage
