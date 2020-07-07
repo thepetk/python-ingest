@@ -32,3 +32,7 @@ def upgrade():
 
 def downgrade():  
     op.drop_table('event')
+
+    op.drop_index('ix_events_device_number', table_name='event')
+    op.drop_index('ix_events_event_code', table_name='event')
+    op.drop_index('ix_events_message_date', table_name='event')
