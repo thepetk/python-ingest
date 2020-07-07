@@ -23,8 +23,8 @@ def upgrade():
         sa.Column('device_number', sa.String(), nullable=False),
         sa.Column('event_code', sa.String(), nullable=False),
         sa.Column('message_date', sa.DateTime()),
-        sa.Column('longitude', sa.String()),
-        sa.Column('latitude', sa.DateTime(), default=sa.func.now()))
+        sa.Column('longitude', sa.Numeric(precision=8, scale=6)),
+        sa.Column('latitude', sa.Numeric(precision=8, scale=6))
 
     op.create_index(op.f('ix_events_device_number'), 'event', ['device_number'], unique=False)
     op.create_index(op.f('ix_events_event_code'), 'event', ['event_code'], unique=False)
