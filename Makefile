@@ -5,5 +5,5 @@ default:
 	@echo "Commands available:\n"
 	@echo "    make image		# builds a python-ingest image."
 
-run:
+image:
 	docker build -t python-ingest:v1 .
