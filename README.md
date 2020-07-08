@@ -27,7 +27,7 @@ $ pip3 install -r requirements.txt
 ```
 * Run necessary db migrations. Do not forget to change the sqlalchemy.url on alembic.ini file
 ```
-$ alembic head upgrade
+$ alembic upgrade head
 ```
 * Go to .env file inside config folder and change db environment variable values according to your database credentials.
 
