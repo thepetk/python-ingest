@@ -2,6 +2,7 @@ import socket
 import json
 import sys
 import threading
+import concurrent.futures as cf
 
 from collections import namedtuple
 from time import sleep
@@ -26,12 +27,10 @@ publisher_conf_dict = {
 }
 
 
-def service_connection(thread_data):
+def service_connection(gwConnection, gwAddress):
     '''
     Handles thread data from ingest loop.
     '''
-    # Parse connection and address from thread data
-    gwConnection, gwAddress = thread_data
     app.logger.info('Received from:%s' % str(gwAddress))
 
     # Fetch data from connection, notify for success and close connection
@@ -56,6 +55,7 @@ def service_connection(thread_data):
             longitude = decoded_event.longitude,
             latitude = decoded_event.latitude)
         try:
+            # There are plenty of options for commiting to db.
             db_session = create_session()
             db_session.merge(event)
             db_session.commit()
@@ -83,39 +83,33 @@ def parse_sockets():
     """
 
     threads_list = []
-
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as gw_socket:
-        try:
-            gw_socket.bind((host, port))
-        except OSError:
-            # If address is used from previous instance sleep for some seconds and retry
-            app.logger.warning('Address in use from previous instance. Reconnecting in %s seconds..' % (
-                                                                    str(app.config['RECONNECT_TIMEOUT'])))
-            sleep(int(app.config['RECONNECT_TIMEOUT']))
-            parse_sockets()
-
-        gw_socket.listen()
-        app.logger.info('Listening to: %s:%s' % (str(host), str(port)))
-
-        while True:
+    with cf.ThreadPoolExecutor(max_workers=int(app.config['INGEST_CONCURRENCY'])) as ingest_executor:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as gw_socket:
             try:
-                # When a new socket comes create a new thread.
-                # TODO - Best practice here to use a ThreadPoolExecutor. With this technique you can use already created
-                # inactive threads.
-                new_thread = threading.Thread(target=service_connection, args=(gw_socket.accept(),)).start()
-                threads_list.append(new_thread)
+                gw_socket.bind((host, port))
+            except OSError:
+                # If address is used from previous instance sleep for some seconds and retry
+                app.logger.warning('Address in use from previous instance. Reconnecting in %s seconds..' % (
+                                                                        str(app.config['RECONNECT_TIMEOUT'])))
+                sleep(int(app.config['RECONNECT_TIMEOUT']))
+                parse_sockets()
 
-            except KeyboardInterrupt:
-                # Close all open threads after cntrl+C
-                app.logger.info('Closing all threads..')
-                for thread in threads_list:
-                    if thread:
-                        thread.join()
-                app.logger.info('Closing Ingest. Bye')
-                sys.exit()
+            gw_socket.listen()
+            app.logger.info('Listening to: %s:%s' % (str(host), str(port)))
 
-            except RuntimeError as e:
-                app.logger.warning('Runtime Error: %' % (str(e)))
+            while True:
+                try:
+                    # Parse connection and address from thread data
+                    gwConnection, gwAddress = gw_socket.accept()
+                    ingest_executor.submit(service_connection, gwConnection, gwAddress)
+                except KeyboardInterrupt:
+                    # Close all open threads after cntrl+C
+                    app.logger.info('Closing all threads..')
+                    app.logger.info('Closing Ingest. Bye')
+                    sys.exit()
+
+                except RuntimeError as e:
+                    app.logger.warning('Runtime Error: %' % (str(e)))
 
 # Run parse socket method. This could be done also with a manage.py or from __init__.py file or something else
 parse_sockets()

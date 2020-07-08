@@ -3,8 +3,10 @@ import os
 from datetime import timedelta
 from dotenv import load_dotenv
 
-
 class Config(object):
+    """
+    Config loads all variable values from dotenv file.
+    """
     dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
     load_dotenv(dotenv_path)
 
@@ -28,7 +30,8 @@ class Config(object):
     RMQ_QUEUE = os.getenv('RMQ_QUEUE')
     RMQ_RETRY = os.getenv('RMQ_RETRY')
 
-    # Host Configuration
+    # Ingest Configuration
     INGEST_HOST = os.getenv('INGEST_HOST')
     INGEST_PORT = os.getenv('INGEST_PORT')
     RECONNECT_TIMEOUT = os.getenv('RECONNECT_TIMEOUT')
+    INGEST_CONCURRENCY = os.getenv('INGEST_CONCURRENCY')

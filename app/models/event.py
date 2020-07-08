@@ -5,6 +5,14 @@ from app.models.base import BaseModel
 
 
 class Event(BaseModel):
+    """
+    All device signals and fields are stored inside this model.
+    In real-world example this will be the most crucial table of your database.
+    We prefer to include it in its own database.
+
+    Note that our fields are verbose in order to understand them. It is a bad
+    practice to keep them that way.
+    """
     device_number = db.Column(db.String, index=True)
     event_code = db.Column(db.String, index=True)
     message_date = db.Column(db.DateTime, index=True)

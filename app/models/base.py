@@ -1,8 +1,6 @@
 from app import db
 
 class BaseModel(db.Model):
-    # __tablename__ = None
-    # __schema__ = None
     __abstract__ = True
     
     id = db.Column(db.Integer, primary_key=True)
