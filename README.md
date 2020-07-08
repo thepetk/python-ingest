@@ -29,7 +29,7 @@ $ pip3 install -r requirements.txt
 ```
 $ alembic head upgrade
 ```
-* Go to .env file inside config folder and change environment variable values according to your credentials.
+* Go to .env file inside config folder and change db environment variable values according to your database credentials.
 
 * Now you can build your docker image.
 ```
