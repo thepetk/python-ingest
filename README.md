@@ -6,7 +6,7 @@ Docker (> 19.03) and docker-compose (> 3.7) are required to run the python-inges
 
 ## Pre Installation Notes
 
-* Create a root project folder and get inside. On linux:
+* Create a root project folder and get inside. On linux and Mac OS:
 ```
 mkdir your_folders_name
 cd your_folders_name
